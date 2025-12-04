@@ -1,34 +1,28 @@
 #ifndef PREMIUM_H
 #define PREMIUM_H
+#include "membresia.h" 
 #include <string>
-using namespace std;
 
-class Premium {
+class Premium : public Membresia {
 private:
-    string cliente;
-    int meses;
-    double precioMensual;
+
+    double precioMensual; 
 
 public:
-    Premium(string c = "", int m = 0) : cliente(c), meses(m), precioMensual(1000) {}
+    Premium(string c = "", int m = 0) : Membresia(c, m), precioMensual(1000) {}
 
-    // GETTERS
-    string getCliente() const { return cliente; }
-    int getMeses() const { return meses; }
+
+    // GETTER/SETTER 
     double getPrecioMensual() const { return precioMensual; }
-
-    // SETTERS
-    void setCliente(const string &c) { cliente = c; }
-    void setMeses(int m) { meses = m; }
     void setPrecioMensual(double p) { precioMensual = p; }
-
-    double calcularPago() {
+    
+    double calcularPago() override {
         return meses * precioMensual;
     }
 
-    string info() {
-        return "Membresia Premium para " + cliente + 
-               " por " + to_string(meses) + " meses";
+    string info() override {
+        return "Membresia Premium para " + cliente +
+               " por " + to_string(meses) + " meses (Costo Mensual: $" + to_string(precioMensual) + ")";
     }
 };
 
