@@ -1,15 +1,23 @@
 #include <iostream>
 #include <string>
+#include <memory>
+#include <algorithm> 
+#include "membresia.h"
+#include "sistemamembresias.h"
 #include "premium.h"
 #include "estandar.h"
 #include "cortesia.h"
+
 using namespace std;
 
-int main() {
+unique_ptr<Membresia> crearNuevaMembresia() {
     string nombre;
     string tipo;
     int meses;
 
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    
+    cout << "\nRegistro de nueva membresia\n";
     cout << "Nombre del cliente: ";
     getline(cin, nombre);
 
@@ -19,35 +27,38 @@ int main() {
     cout << "Meses de servicio: ";
     cin >> meses;
 
-    cout << endl;
+    transform(tipo.begin(), tipo.end(), tipo.begin(), ::tolower);
 
     if (tipo == "premium") {
-        Premium p;
-        p.setCliente(nombre);
-        p.setMeses(meses);
-
-        cout << p.info() << endl;
-        cout << "Pago total: $" << p.calcularPago() << endl;
+        return make_unique<Premium>(nombre, meses);
     }
     else if (tipo == "estandar") {
-        Estandar e;
-        e.setCliente(nombre);
-        e.setMeses(meses);
-
-        cout << e.info() << endl;
-        cout << "Pago total: $" << e.calcularPago() << endl;
+        return make_unique<Estandar>(nombre, meses);
     }
     else if (tipo == "cortesia") {
-        Cortesia c;
-        c.setCliente(nombre);
-        c.setMeses(meses);
-
-        cout << c.info() << endl;
-        cout << "Pago total: $" << c.calcularPago() << endl;
+        return make_unique<Cortesia>(nombre, meses);
     }
     else {
-        cout << "Tipo de membresia no valido." << endl;
+        cout << "Tipo de membresia no valido.\n";
+        return nullptr;
     }
+}
+
+int main() {
+    SistemaMembresias miSistema; 
+    
+    char continuar = 's';
+    
+    while (continuar == 's' || continuar == 'S') {
+        unique_ptr<Membresia> nueva = crearNuevaMembresia();
+        
+        miSistema.agregarMembresia(std::move(nueva));
+        
+        cout << "\n¿Desea registrar otra membresia? (s/n): ";
+        cin >> continuar;
+    }
+
+    miSistema.generarReporte();
 
     return 0;
 }
